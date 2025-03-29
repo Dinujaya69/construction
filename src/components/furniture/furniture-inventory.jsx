@@ -6,6 +6,7 @@ import ItemsGrid from "./items-grid";
 import AddItemModal from "./add-item-modal";
 import { initialItems, categories, generateNewId } from "@/data/furniture-data";
 
+
 export default function FurnitureInventory() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);

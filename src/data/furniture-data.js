@@ -1,5 +1,3 @@
-// Assuming you're using React
-import React from "react";
 import TBL1 from "@/assets/table/coffee table.png";
 import TBL2 from "@/assets/table/bed side table.png";
 import TBL3 from "@/assets/table/console table.png";
@@ -9,6 +7,14 @@ import TBL5 from "@/assets/table/end table.png";
 import CHR1 from "@/assets/chair/office chare.png";
 import CHR2 from "@/assets/chair/stool chair.png";
 import CHR3 from "@/assets/chair/wood desk chir 3.png";
+
+export const categories = [
+  "TABLE",
+  "CHAIR",
+  "WINDOWS",
+  "CUPBOARD",
+  "TV Console",
+];
 
 export const initialItems = [
   {
@@ -79,19 +85,20 @@ export const initialItems = [
   },
 ];
 
-// Example of how to render the items
-function ProductList() {
-  return (
-    <div>
-      {initialItems.map((item) => (
-        <div key={item.id}>
-          <h2>{item.category}</h2>
-          <img src={item.image} alt={item.category} width="200" height="150" />
-          <p>Quantity Remaining: {item.quantityRemaining}</p>
-        </div>
-      ))}
-    </div>
-  );
-}
+// Function to generate a new ID based on the category
+export const generateNewId = (category, items) => {
+  const categoryPrefix = category.charAt(0).toUpperCase(); // First letter of category
+  const categoryItems = items.filter((item) => item.category === category);
 
-export default ProductList;
+  if (categoryItems.length === 0) {
+    return `${categoryPrefix}001`; // If no items exist in the category, start from 001
+  }
+
+  // Extract numerical IDs and find the maximum
+  const maxId = categoryItems.reduce((max, item) => {
+    const num = parseInt(item.id.replace(categoryPrefix, ""), 10);
+    return num > max ? num : max;
+  }, 0);
+
+  return `${categoryPrefix}${String(maxId + 1).padStart(3, "0")}`;
+};
