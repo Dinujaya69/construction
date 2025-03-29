@@ -1,49 +1,63 @@
-// Initial furniture data
-export const categories = [
-  "TABLE",
-  "CHAIR",
-  "WINDOWS",
-  "CUPBOARD",
-  "TV Console",
-  "OTHER",
-];
+// Assuming you're using React
+import React from "react";
+import TBL1 from "@/assets/table/coffee table.png";
+import TBL2 from "@/assets/table/bed side table.png";
+import TBL3 from "@/assets/table/console table.png";
+import TBL4 from "@/assets/table/dining table.png";
+import TBL5 from "@/assets/table/end table.png";
+
+import CHR1 from "@/assets/chair/office chare.png";
+import CHR2 from "@/assets/chair/stool chair.png";
+import CHR3 from "@/assets/chair/wood desk chir 3.png";
 
 export const initialItems = [
   {
     id: "T001",
     category: "TABLE",
-    image: "/placeholder.svg?height=150&width=200",
+    image: TBL1,
     quantityRemaining: 5,
   },
   {
     id: "T002",
     category: "TABLE",
-    image: "/placeholder.svg?height=150&width=200",
+    image: TBL2,
     quantityRemaining: 3,
   },
   {
     id: "T003",
     category: "TABLE",
-    image: "/placeholder.svg?height=150&width=200",
+    image: TBL3,
     quantityRemaining: 7,
   },
   {
     id: "T004",
     category: "TABLE",
-    image: "/placeholder.svg?height=150&width=200",
+    image: TBL4,
     quantityRemaining: 2,
+  },
+  {
+    id: "T005",
+    category: "TABLE",
+    image: TBL5,
+    quantityRemaining: 4,
   },
   {
     id: "C001",
     category: "CHAIR",
-    image: "/placeholder.svg?height=150&width=200",
+    image: CHR1,
     quantityRemaining: 10,
   },
   {
     id: "C002",
     category: "CHAIR",
-    image: "/placeholder.svg?height=150&width=200",
+    image: CHR2,
     quantityRemaining: 8,
+  },
+  {
+    id: "C003",
+    category: "CHAIR",
+    image: CHR3,
+    quantityRemaining: 6,
   },
   {
     id: "W001",
@@ -65,21 +79,19 @@ export const initialItems = [
   },
 ];
 
-// Helper function to generate new ID
-export function generateNewId(category, existingItems) {
-  // Get prefix from category (first letter or first letter + first letter of second word)
-  const prefix =
-    category.charAt(0) +
-    (category.includes(" ") ? category.split(" ")[1].charAt(0) : "");
-
-  // Filter existing items by category and extract their numeric IDs
-  const existingIds = existingItems
-    .filter((item) => item.category === category)
-    .map((item) => Number.parseInt(item.id.substring(prefix.length)));
-
-  // Get the next ID number
-  const nextId = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 1;
-
-  // Format the ID with leading zeros
-  return `${prefix}${String(nextId).padStart(3, "0")}`;
+// Example of how to render the items
+function ProductList() {
+  return (
+    <div>
+      {initialItems.map((item) => (
+        <div key={item.id}>
+          <h2>{item.category}</h2>
+          <img src={item.image} alt={item.category} width="200" height="150" />
+          <p>Quantity Remaining: {item.quantityRemaining}</p>
+        </div>
+      ))}
+    </div>
+  );
 }
+
+export default ProductList;

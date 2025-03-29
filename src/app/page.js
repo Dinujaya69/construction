@@ -15,8 +15,8 @@ import { Label } from "@/components/ui/label";
 
 export default function ProjectOverview() {
   const [projects, setProjects] = useState([
-    { id: "1", name: "p1", completion: 100 },
-    { id: "2", name: "p2", completion: 0 },
+    { id: "1", name: "p1", completion: 0, photos: [] },
+    { id: "2", name: "p2", completion: 0, photos: [] },
   ]);
   const [newProjectName, setNewProjectName] = useState("");
   const [open, setOpen] = useState(false);
@@ -27,11 +27,28 @@ export default function ProjectOverview() {
         id: Date.now().toString(),
         name: newProjectName,
         completion: 0,
+        photos: [],
       };
       setProjects([...projects, newProject]);
       setNewProjectName("");
       setOpen(false);
     }
+  };
+
+  const addPhoto = (event, projectId) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setProjects((prevProjects) =>
+      prevProjects.map((project) => {
+        if (project.id === projectId && project.photos.length < 4) {
+          const newPhotos = [...project.photos, URL.createObjectURL(file)];
+          const newCompletion = (newPhotos.length / 4) * 100;
+          return { ...project, photos: newPhotos, completion: newCompletion };
+        }
+        return project;
+      })
+    );
   };
 
   return (
@@ -75,9 +92,15 @@ export default function ProjectOverview() {
             <CircleProgress percentage={project.completion} />
             <p className="mt-4 text-lg font-medium">{project.name}</p>
             <div className="flex gap-2 mt-4">
-              <Button className="bg-green-500 hover:bg-green-600 text-white">
-                View
-              </Button>
+              <label className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded cursor-pointer">
+                Upload Photo
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => addPhoto(e, project.id)}
+                  className="hidden"
+                />
+              </label>
               <Button
                 variant="destructive"
                 onClick={() =>
@@ -86,6 +109,19 @@ export default function ProjectOverview() {
               >
                 Remove
               </Button>
+            </div>
+            <p className="mt-2 text-sm text-gray-500">
+              {project.photos.length} / 4 photos uploaded
+            </p>
+            <div className="flex gap-2 mt-2">
+              {project.photos.map((photo, index) => (
+                <img
+                  key={index}
+                  src={photo}
+                  alt={`Project ${index + 1}`}
+                  className="w-16 h-16 rounded object-cover"
+                />
+              ))}
             </div>
           </div>
         ))}

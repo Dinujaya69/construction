@@ -1,15 +1,18 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { categories } from "@/data/furniture-data";
+import React from "react";
+import { initialItems } from "@/data/furniture-data"; 
 
 export default function CategoryButtons({
   selectedCategory,
   onCategoryClick,
   onAddClick,
 }) {
-  // Use all categories except "OTHER" for the buttons
-  const displayCategories = categories.filter((cat) => cat !== "OTHER");
+  // Extract unique categories from initialItems, excluding "OTHER"
+  const displayCategories = [
+    ...new Set(initialItems.map((item) => item.category)),
+  ].filter((cat) => cat !== "OTHER");
 
   return (
     <div className="flex flex-wrap gap-4">

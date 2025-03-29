@@ -3,7 +3,7 @@ import { User, Menu } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import Logo from "@/assets/logo.png";
+
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -14,7 +14,7 @@ const Header = () => {
         {/* Logo */}
         <div className="flex items-center space-x-4 md:space-x-6">
           <Image
-            src={Logo}
+            src="/logo.png"
             alt="Logo"
             width={80}
             height={80}
