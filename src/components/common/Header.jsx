@@ -41,7 +41,7 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center space-x-4">
-          <Link href="/pages/auth" className="py-2 hover:underline">
+          <Link href="/" className="py-2 hover:underline">
             
             <User className="w-6 h-6 cursor-pointer" />
           </Link>
