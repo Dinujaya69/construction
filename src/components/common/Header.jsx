@@ -26,7 +26,7 @@ const Header = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-8">
-          <Link href="/" className="hover:underline">
+          <Link href="/pages/dashboard" className="hover:underline">
             Dashboard
           </Link>
           <Link href="/pages/client" className="hover:underline">
@@ -52,7 +52,7 @@ const Header = () => {
 
       {menuOpen && (
         <div className="md:hidden flex flex-col bg-gray-700 p-4 mt-2 rounded-lg">
-          <Link href="/" className="py-2 hover:underline">
+          <Link href="/pages/dashboard" className="py-2 hover:underline">
             Dashboard
           </Link>
           <Link href="/pages/client" className="py-2 hover:underline">
