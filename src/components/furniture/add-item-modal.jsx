@@ -7,7 +7,6 @@ export default function AddItemModal({
   isOpen,
   onClose,
   onAdd,
-  categories,
   selectedCategory,
 }) {
   const [newItem, setNewItem] = useState({
@@ -16,7 +15,7 @@ export default function AddItemModal({
     quantityRemaining: 1,
   });
 
-  // Update the form when the selected category changes
+  // Update category when it changes
   useEffect(() => {
     if (selectedCategory) {
       setNewItem((prev) => ({ ...prev, category: selectedCategory }));
@@ -24,6 +23,14 @@ export default function AddItemModal({
   }, [selectedCategory]);
 
   if (!isOpen) return null;
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setNewItem({ ...newItem, image: imageUrl });
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -50,21 +57,25 @@ export default function AddItemModal({
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-         
-
+          {/* Image Upload and Preview */}
           <div>
-            <label className="block mb-1 font-medium">Image URL</label>
+            <label className="block mb-1 font-medium">Image</label>
             <input
-              type="text"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
               className="w-full p-2 border rounded-md"
-              value={newItem.image}
-              onChange={(e) =>
-                setNewItem({ ...newItem, image: e.target.value })
-              }
-              placeholder="Image URL"
             />
+            <div className="mt-2">
+              <img
+                src={newItem.image}
+                alt="Preview"
+                className="w-full h-32 object-cover rounded-md"
+              />
+            </div>
           </div>
 
+          {/* Quantity Input */}
           <div>
             <label className="block mb-1 font-medium">Quantity</label>
             <input
@@ -81,6 +92,7 @@ export default function AddItemModal({
             />
           </div>
 
+          {/* Buttons */}
           <div className="flex justify-end gap-2 pt-2">
             <button
               type="button"
