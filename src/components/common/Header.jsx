@@ -35,14 +35,13 @@ const Header = () => {
           <Link href="/pages/furniture" className="hover:underline">
             Furniture
           </Link>
-          <Link href="#" className="hover:underline">
+          <Link href="/pages/report" className="hover:underline">
             Report
           </Link>
         </nav>
 
         <div className="flex items-center space-x-4">
           <Link href="/" className="py-2 hover:underline">
-            
             <User className="w-6 h-6 cursor-pointer" />
           </Link>
           <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
@@ -53,16 +52,16 @@ const Header = () => {
 
       {menuOpen && (
         <div className="md:hidden flex flex-col bg-gray-700 p-4 mt-2 rounded-lg">
-          <Link href="#" className="py-2 hover:underline">
+          <Link href="/" className="py-2 hover:underline">
             Dashboard
           </Link>
-          <Link href="#" className="py-2 hover:underline">
+          <Link href="/pages/client" className="py-2 hover:underline">
             Clients
           </Link>
-          <Link href="#" className="py-2 hover:underline">
+          <Link href="/pages/furniture" className="py-2 hover:underline">
             Furniture
           </Link>
-          <Link href="#" className="py-2 hover:underline">
+          <Link href="/pages/report" className="py-2 hover:underline">
             Report
           </Link>
         </div>
