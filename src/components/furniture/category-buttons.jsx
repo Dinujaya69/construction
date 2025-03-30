@@ -1,28 +1,21 @@
-"use client";
-
 import { Plus } from "lucide-react";
 import React from "react";
-import { initialItems } from "@/data/furniture-data"; 
 
 export default function CategoryButtons({
+  categories,
   selectedCategory,
   onCategoryClick,
   onAddClick,
 }) {
-  // Extract unique categories from initialItems, excluding "OTHER"
-  const displayCategories = [
-    ...new Set(initialItems.map((item) => item.category)),
-  ].filter((cat) => cat !== "OTHER");
-
   return (
-    <div className="flex flex-wrap gap-4">
-      {displayCategories.map((category) => (
+    <div className="flex flex-wrap gap-8 justify-center">
+      {categories.map((category) => (
         <button
           key={category}
-          className={`px-6 py-4 rounded-md text-white font-medium min-w-[120px] transition-colors ${
+          className={`px-16 py-12 rounded-3xl text-white font-bold min-w-[200px] min-h-[160px] text-2xl transition-all shadow-2xl ${
             selectedCategory === category
-              ? "bg-blue-700"
-              : "bg-blue-500 hover:bg-blue-600"
+              ? "bg-blue-700 scale-105"
+              : "bg-blue-500 hover:bg-blue-600 hover:scale-105"
           }`}
           onClick={() => onCategoryClick(category)}
         >
@@ -30,10 +23,10 @@ export default function CategoryButtons({
         </button>
       ))}
       <button
-        className="px-6 py-4 rounded-md bg-blue-500 hover:bg-blue-600 text-white font-medium min-w-[120px] flex items-center justify-center"
+        className="px-16 py-12 rounded-3xl bg-blue-500 hover:bg-blue-600 text-white font-bold min-w-[200px] min-h-[160px] flex items-center justify-center shadow-2xl hover:scale-105 transition-all"
         onClick={onAddClick}
       >
-        <Plus className="w-5 h-5" />
+        <Plus className="w-12 h-12" />
       </button>
     </div>
   );

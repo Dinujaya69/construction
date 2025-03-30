@@ -41,7 +41,10 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center space-x-4">
-          <User className="w-6 h-6 cursor-pointer" />
+          <Link href="/pages/auth" className="py-2 hover:underline">
+            
+            <User className="w-6 h-6 cursor-pointer" />
+          </Link>
           <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
             <Menu className="w-6 h-6" />
           </button>

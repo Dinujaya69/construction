@@ -1,5 +1,4 @@
-"use client";
-
+// items-grid.js
 import Image from "next/image";
 import { Plus } from "lucide-react";
 
@@ -18,7 +17,7 @@ export default function ItemsGrid({ category, items, onAddClick }) {
           >
             <div className="bg-emerald-400 rounded-lg overflow-hidden w-[250px] h-[180px] flex items-center justify-center">
               <Image
-                src={item.image || "/placeholder.svg"}
+                src={item.image}
                 alt={`${category} ${item.id}`}
                 width={250}
                 height={180}

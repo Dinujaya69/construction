@@ -50,22 +50,7 @@ export default function AddItemModal({
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block mb-1 font-medium">Category</label>
-            <select
-              className="w-full p-2 border rounded-md"
-              value={newItem.category}
-              onChange={(e) =>
-                setNewItem({ ...newItem, category: e.target.value })
-              }
-            >
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </div>
+         
 
           <div>
             <label className="block mb-1 font-medium">Image URL</label>
