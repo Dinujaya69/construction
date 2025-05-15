@@ -1,5 +1,7 @@
+"use client";
+
 import { Plus } from "lucide-react";
-import React from "react";
+import { motion } from "framer-motion";
 
 export default function CategoryButtons({
   categories,
@@ -8,26 +10,40 @@ export default function CategoryButtons({
   onAddClick,
 }) {
   return (
-    <div className="flex flex-wrap gap-8 justify-center">
-      {categories.map((category) => (
-        <button
-          key={category}
-          className={`px-16 py-12 rounded-3xl text-white font-bold min-w-[200px] min-h-[160px] text-2xl transition-all shadow-2xl ${
-            selectedCategory === category
-              ? "bg-blue-700 scale-105"
-              : "bg-blue-500 hover:bg-blue-600 hover:scale-105"
-          }`}
-          onClick={() => onCategoryClick(category)}
+    <div className="py-6">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Categories</h2>
+      <div className="flex flex-wrap gap-4 md:gap-6">
+        {categories.map((category, index) => (
+          <motion.button
+            key={category}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.1 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={`px-8 py-6 rounded-xl text-white font-bold min-w-[180px] shadow-lg transition-all ${
+              selectedCategory === category
+                ? "bg-gradient-to-r from-blue-600 to-blue-800 ring-4 ring-blue-300"
+                : "bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
+            }`}
+            onClick={() => onCategoryClick(category)}
+          >
+            {category}
+          </motion.button>
+        ))}
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: categories.length * 0.1 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="px-8 py-6 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-700 text-white font-bold min-w-[180px] shadow-lg flex items-center justify-center gap-2"
+          onClick={onAddClick}
         >
-          {category}
-        </button>
-      ))}
-      <button
-        className="px-16 py-12 rounded-3xl bg-blue-500 hover:bg-blue-600 text-white font-bold min-w-[200px] min-h-[160px] flex items-center justify-center shadow-2xl hover:scale-105 transition-all"
-        onClick={onAddClick}
-      >
-        <Plus className="w-12 h-12" />
-      </button>
+          <Plus className="w-6 h-6" />
+          <span>Add New</span>
+        </motion.button>
+      </div>
     </div>
   );
 }
