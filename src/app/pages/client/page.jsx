@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,52 +13,119 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import MainLayout from "@/components/MainLayout/MainLayout";
+import BASE_URL from "@/API/config";
+
 export default function ClientManagement() {
-  const [clients, setClients] = useState([
-    {
-      id: "C001",
-      name: "Suresh",
-      idNumber: "12345768",
-      contact: "0777232323",
-      email: "Sothghg@Gmail.Com",
-      project: "Project 1",
-    },
-    {
-      id: "C002",
-      name: "Bryan",
-      idNumber: "332211128",
-      contact: "0742323121",
-      email: "Hdcdcucudhdui@Gmail.Com",
-      project: "Project 2",
-    },
-  ]);
+  const [clients, setClients] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [newClient, setNewClient] = useState({
-    id: "",
     name: "",
-    idNumber: "",
-    contact: "",
     email: "",
-    project: "",
+    password: "",
+    role: "client",
   });
   const [open, setOpen] = useState(false);
 
-  const addClient = () => {
-    if (newClient.name.trim()) {
-      setClients([
-        ...clients,
-        { ...newClient, id: `C00${clients.length + 1}` },
-      ]);
-      setNewClient({
-        id: "",
-        name: "",
-        idNumber: "",
-        contact: "",
-        email: "",
-        project: "",
-      });
-      setOpen(false);
+  // Fetch all users and projects
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/users`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch clients");
+        }
+        const data = await response.json();
+        const clientsOnly = data.filter((user) => user.role === "client");
+        setClients(clientsOnly);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/projects`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch projects");
+        }
+        const data = await response.json();
+        setProjects(data);
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    fetchClients();
+    fetchProjects();
+  }, []);
+
+  const getUserProjects = (userId) => {
+    const userProjects = projects.filter(
+      (project) => project.user && project.user._id === userId
+    );
+    return (
+      userProjects.map((project) => project.name).join(", ") || "No projects"
+    );
+  };
+
+  const addClient = async () => {
+    if (
+      newClient.name.trim() &&
+      newClient.email.trim() &&
+      newClient.password.trim()
+    ) {
+      try {
+        const response = await fetch(`${BASE_URL}/users/register`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newClient),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to register client");
+        }
+
+        const data = await response.json();
+        setClients([...clients, data.user]);
+
+        setNewClient({
+          name: "",
+          email: "",
+          password: "",
+          role: "client",
+        });
+        setOpen(false);
+      } catch (err) {
+        setError(err.message);
+      }
     }
   };
+
+  if (loading) {
+    return (
+      <MainLayout>
+        <div className="container mx-auto p-4 text-center">
+          Loading clients...
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <MainLayout>
+        <div className="container mx-auto p-4 text-center text-red-500">
+          Error: {error}
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -68,7 +135,7 @@ export default function ClientManagement() {
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button className="bg-green-500 hover:bg-green-600">
-                <Plus className="mr-1 h-4 w-4" /> Add New Customer
+                <Plus className="mr-1 h-4 w-4" /> Add New Client
               </Button>
             </DialogTrigger>
             <DialogContent>
@@ -76,27 +143,50 @@ export default function ClientManagement() {
                 <DialogTitle>Add New Client</DialogTitle>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                {Object.keys(newClient).map(
-                  (field, index) =>
-                    field !== "id" && (
-                      <div key={index} className="grid gap-2">
-                        <Label htmlFor={field}>
-                          {field.replace(/([A-Z])/g, " $1").trim()}
-                        </Label>
-                        <Input
-                          id={field}
-                          value={newClient[field]}
-                          onChange={(e) =>
-                            setNewClient({
-                              ...newClient,
-                              [field]: e.target.value,
-                            })
-                          }
-                          placeholder={`Enter ${field}`}
-                        />
-                      </div>
-                    )
-                )}
+                <div className="grid gap-2">
+                  <Label htmlFor="name">Name</Label>
+                  <Input
+                    id="name"
+                    value={newClient.name}
+                    onChange={(e) =>
+                      setNewClient({
+                        ...newClient,
+                        name: e.target.value,
+                      })
+                    }
+                    placeholder="Enter name"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={newClient.email}
+                    onChange={(e) =>
+                      setNewClient({
+                        ...newClient,
+                        email: e.target.value,
+                      })
+                    }
+                    placeholder="Enter email"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={newClient.password}
+                    onChange={(e) =>
+                      setNewClient({
+                        ...newClient,
+                        password: e.target.value,
+                      })
+                    }
+                    placeholder="Enter password"
+                  />
+                </div>
               </div>
               <Button onClick={addClient}>Add Client</Button>
             </DialogContent>
@@ -109,10 +199,10 @@ export default function ClientManagement() {
               {[
                 "Client ID",
                 "Name",
-                "ID Number",
-                "Contact No",
                 "Email",
-                "Project",
+                "Projects",
+                "Role",
+                "Created At",
               ].map((heading, index) => (
                 <th
                   key={index}
@@ -125,13 +215,15 @@ export default function ClientManagement() {
           </thead>
           <tbody>
             {clients.map((client) => (
-              <tr key={client.id} className="border border-gray-200">
-                <td className="px-4 py-2">{client.id}</td>
+              <tr key={client._id} className="border border-gray-200">
+                <td className="px-4 py-2">{client._id}</td>
                 <td className="px-4 py-2">{client.name}</td>
-                <td className="px-4 py-2">{client.idNumber}</td>
-                <td className="px-4 py-2">{client.contact}</td>
                 <td className="px-4 py-2">{client.email}</td>
-                <td className="px-4 py-2">{client.project}</td>
+                <td className="px-4 py-2">{getUserProjects(client._id)}</td>
+                <td className="px-4 py-2">{client.role}</td>
+                <td className="px-4 py-2">
+                  {new Date(client.createdAt).toLocaleDateString()}
+                </td>
               </tr>
             ))}
           </tbody>

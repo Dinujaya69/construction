@@ -1,6 +1,6 @@
-
+// app/layout.js or layout.tsx
+import { AuthProvider } from "@/context/AuthContext"; // ✅ Correct path
 import "./globals.css";
-
 
 export const metadata = {
   title: "Create Next App",
@@ -10,8 +10,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body >
-        {children}
+      <body>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
