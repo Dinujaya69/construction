@@ -258,14 +258,6 @@ export default function ReportsDashboard() {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => viewReport(report._id)}
-                            >
-                              <Eye className="w-4 h-4 mr-1" />
-                              View
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
                               onClick={() =>
                                 downloadIndividualReportPDF(report)
                               }
