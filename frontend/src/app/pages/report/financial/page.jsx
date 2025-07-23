@@ -7,7 +7,14 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Download, Calculator } from "lucide-react";
 import MainLayout from "@/components/MainLayout/MainLayout";
-import { pdf } from "@react-pdf/renderer";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  pdf,
+} from "@react-pdf/renderer";
 import IncomeStatementPDF from "./IncomeStatementPDF";
 
 export default function IncomeStatement() {
@@ -47,7 +54,7 @@ export default function IncomeStatement() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `income-statement-Rs{formData.projectNo || "draft"}.pdf`;
+    link.download = `income-statement-${formData.projectNo || "draft"}.pdf`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -58,6 +65,145 @@ export default function IncomeStatement() {
       currency: "USD",
     }).format(amount);
   };
+
+  const styles = StyleSheet.create({
+    page: {
+      flexDirection: "column",
+      backgroundColor: "#fff",
+      padding: 40,
+    },
+    section: {
+      margin: 10,
+      padding: 10,
+      flexGrow: 1,
+    },
+    title: {
+      fontSize: 24,
+      textAlign: "center",
+      marginBottom: 20,
+    },
+    subtitle: {
+      fontSize: 18,
+      marginBottom: 10,
+    },
+    row: {
+      flexDirection: "row",
+      borderBottomWidth: 1,
+      borderBottomColor: "#000",
+      alignItems: "center",
+      height: 24,
+    },
+    rowTitle: {
+      width: "50%",
+      fontSize: 12,
+    },
+    rowValue: {
+      width: "50%",
+      fontSize: 12,
+      textAlign: "right",
+    },
+    summary: {
+      marginTop: 30,
+      padding: 10,
+      backgroundColor: "#f0f0f0",
+    },
+    summaryRow: {
+      flexDirection: "row",
+      justifyContent: "space-around",
+      marginBottom: 5,
+    },
+    summaryTitle: {
+      fontSize: 12,
+      fontWeight: "bold",
+    },
+    summaryValue: {
+      fontSize: 12,
+    },
+  });
+
+  const IncomeStatementPDF = ({ formData, totalCost, profit }) => (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        <View style={styles.section}>
+          <Text style={styles.title}>Income Statement</Text>
+          <Text style={styles.subtitle}>
+            Project No: {formData.projectNo || "_____________"}
+          </Text>
+
+          <View style={styles.row}>
+            <Text style={styles.rowTitle}>REVENUE</Text>
+            <Text style={styles.rowValue}>
+              {formatCurrency(formData.revenue)}
+            </Text>
+          </View>
+
+          <View style={styles.row}>
+            <Text style={styles.rowTitle}>Cost for the construction (BOQ)</Text>
+            <Text style={styles.rowValue}>
+              {formatCurrency(formData.constructionCost)}
+            </Text>
+          </View>
+
+          <View style={styles.row}>
+            <Text style={styles.rowTitle}>Cost for Furniture</Text>
+            <Text style={styles.rowValue}>
+              {formatCurrency(formData.furnitureCost)}
+            </Text>
+          </View>
+
+          <View style={styles.row}>
+            <Text style={styles.rowTitle}>Payments for workers</Text>
+            <Text style={styles.rowValue}>
+              {formatCurrency(formData.workerPayments)}
+            </Text>
+          </View>
+
+          <View style={styles.row}>
+            <Text style={styles.rowTitle}>All other cost</Text>
+            <Text style={styles.rowValue}>
+              {formatCurrency(formData.otherCost)}
+            </Text>
+          </View>
+
+          <View style={styles.row}>
+            <Text style={styles.rowTitle}>TOTAL COST</Text>
+            <Text style={styles.rowValue}>{formatCurrency(totalCost)}</Text>
+          </View>
+
+          <View style={styles.row}>
+            <Text style={styles.rowTitle}>
+              PROFIT {profit < 0 ? "(LOSS)" : ""}
+            </Text>
+            <Text style={styles.rowValue}>{formatCurrency(profit)}</Text>
+          </View>
+
+          <View style={styles.summary}>
+            <Text style={styles.subtitle}>Summary</Text>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryTitle}>Total Revenue</Text>
+              <Text style={styles.summaryValue}>
+                {formatCurrency(formData.revenue)}
+              </Text>
+            </View>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryTitle}>Total Cost</Text>
+              <Text style={styles.summaryValue}>
+                {formatCurrency(totalCost)}
+              </Text>
+            </View>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryTitle}>
+                Net {profit >= 0 ? "Profit" : "Loss"}
+              </Text>
+              <Text style={styles.summaryValue}>
+                {formatCurrency(Math.abs(profit))}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </Page>
+    </Document>
+  );
 
   return (
     <MainLayout>
@@ -110,8 +256,8 @@ export default function IncomeStatement() {
               </div>
 
               <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold text-orange-700 mb-4">
-                  Expenses
+                <h3 className="text-lg font-semibold text-red-700 mb-4">
+                  Cost Items
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -129,7 +275,7 @@ export default function IncomeStatement() {
                       onChange={(e) =>
                         handleInputChange("constructionCost", e.target.value)
                       }
-                      className="border-orange-300 focus:border-orange-500"
+                      className="border-red-300 focus:border-red-500"
                     />
                   </div>
 
@@ -148,7 +294,7 @@ export default function IncomeStatement() {
                       onChange={(e) =>
                         handleInputChange("furnitureCost", e.target.value)
                       }
-                      className="border-orange-300 focus:border-orange-500"
+                      className="border-red-300 focus:border-red-500"
                     />
                   </div>
 
@@ -167,7 +313,7 @@ export default function IncomeStatement() {
                       onChange={(e) =>
                         handleInputChange("workerPayments", e.target.value)
                       }
-                      className="border-orange-300 focus:border-orange-500"
+                      className="border-red-300 focus:border-red-500"
                     />
                   </div>
 
@@ -183,7 +329,7 @@ export default function IncomeStatement() {
                       onChange={(e) =>
                         handleInputChange("otherCost", e.target.value)
                       }
-                      className="border-orange-300 focus:border-orange-500"
+                      className="border-red-300 focus:border-red-500"
                     />
                   </div>
                 </div>
@@ -223,45 +369,10 @@ export default function IncomeStatement() {
                   </p>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-orange-600">
-                    Total Expenses
-                  </h3>
-                  <p className="text-xl font-bold text-orange-700">
+                  <h3 className="font-semibold text-red-600">Total Cost</h3>
+                  <p className="text-xl font-bold text-red-700">
                     {formatCurrency(totalCost)}
                   </p>
-                </div>
-              </div>
-
-              {/* Detailed Expenses Breakdown */}
-              <div className="bg-orange-50 p-4 rounded">
-                <h4 className="font-semibold text-orange-700 mb-3">
-                  Expense Breakdown
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Construction (BOQ):</span>
-                    <span className="font-medium">
-                      {formatCurrency(formData.constructionCost)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Furniture:</span>
-                    <span className="font-medium">
-                      {formatCurrency(formData.furnitureCost)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Worker Payments:</span>
-                    <span className="font-medium">
-                      {formatCurrency(formData.workerPayments)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Other Costs:</span>
-                    <span className="font-medium">
-                      {formatCurrency(formData.otherCost)}
-                    </span>
-                  </div>
                 </div>
               </div>
 
@@ -270,27 +381,13 @@ export default function IncomeStatement() {
                   {profit >= 0 ? "Net Profit" : "Net Loss"}
                 </h3>
                 <p
-                  className={`text-2xl font-bold Rs{
+                  className={`text-2xl font-bold ${
                     profit >= 0 ? "text-blue-700" : "text-red-700"
                   }`}
                 >
                   {formatCurrency(Math.abs(profit))}
                 </p>
               </div>
-
-              {/* Profit Margin Indicator */}
-              {formData.revenue > 0 && (
-                <div className="text-center p-3 bg-gray-100 rounded">
-                  <h4 className="font-semibold text-gray-600">Profit Margin</h4>
-                  <p
-                    className={`text-lg font-bold Rs{
-                      profit >= 0 ? "text-green-600" : "text-red-600"
-                    }`}
-                  >
-                    {((profit / formData.revenue) * 100).toFixed(2)}%
-                  </p>
-                </div>
-              )}
             </CardContent>
           </Card>
         </div>

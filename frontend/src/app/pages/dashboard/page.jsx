@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect, useCallback } from "react";
 import {
   Plus,
@@ -60,6 +59,14 @@ export default function ProjectOverview() {
   const [projectFilePreviewUrls, setProjectFilePreviewUrls] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
 
+  // Check if user can edit/delete a project
+  const canEditProject = (project) => {
+    if (!isAuthenticated || !user) return false;
+    return user.role === "admin" || project.user?._id === user._id;
+  };
+
+  console.log("user", user);
+
   // Fetch projects on component mount
   useEffect(() => {
     fetchProjects();
@@ -70,7 +77,6 @@ export default function ProjectOverview() {
     if (files.length > 0) {
       const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
       setFilePreviewUrls(newPreviewUrls);
-
       // Cleanup function to revoke object URLs
       return () => {
         newPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
@@ -85,7 +91,6 @@ export default function ProjectOverview() {
         URL.createObjectURL(file)
       );
       setProjectFilePreviewUrls(newPreviewUrls);
-
       // Cleanup function to revoke object URLs
       return () => {
         newPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
@@ -96,7 +101,11 @@ export default function ProjectOverview() {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${BASE_URL}/projects`);
+      const response = await axios.get(`${BASE_URL}/projects`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       setProjects(response.data);
     } catch (error) {
       toast.error("Failed to fetch projects");
@@ -146,17 +155,14 @@ export default function ProjectOverview() {
     (e) => {
       e.preventDefault();
       setIsDragging(false);
-
       if (e.dataTransfer.files) {
         const droppedFiles = Array.from(e.dataTransfer.files)
           .filter((file) => file.type.startsWith("image/"))
           .slice(0, 5);
-
         if (droppedFiles.length === 0) {
           toast.error("Please drop image files only");
           return;
         }
-
         if (editMode) {
           setProjectFiles(droppedFiles);
         } else {
@@ -184,30 +190,25 @@ export default function ProjectOverview() {
       toast.error("You must be logged in to create a project");
       return;
     }
-
     if (!newProject.name.trim()) {
       toast.error("Project name is required");
       return;
     }
-
     try {
       setLoading(true);
-
       const formData = new FormData();
       formData.append("name", newProject.name);
       formData.append("description", newProject.description);
       formData.append("note", newProject.note);
-
       files.forEach((file) => {
         formData.append("images", file);
       });
-
       const response = await axios.post(`${BASE_URL}/projects`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-
       setProjects([...projects, response.data.newProject]);
       setNewProject({ name: "", description: "", note: "" });
       setFiles([]);
@@ -227,29 +228,29 @@ export default function ProjectOverview() {
       toast.error("You must be logged in to update a project");
       return;
     }
-
+    if (!canEditProject(selectedProject)) {
+      toast.error("You don't have permission to edit this project");
+      return;
+    }
     try {
       setLoading(true);
-
       const formData = new FormData();
       formData.append("name", selectedProject.name);
       formData.append("description", selectedProject.description);
       formData.append("note", selectedProject.note);
-
       projectFiles.forEach((file) => {
         formData.append("images", file);
       });
-
       const response = await axios.put(
         `${BASE_URL}/projects/${selectedProject._id}`,
         formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
-
       setProjects(
         projects.map((p) =>
           p._id === selectedProject._id ? response.data.project : p
@@ -274,10 +275,18 @@ export default function ProjectOverview() {
       toast.error("You must be logged in to delete a project");
       return;
     }
-
+    const project = projects.find((p) => p._id === projectId);
+    if (!canEditProject(project)) {
+      toast.error("You don't have permission to delete this project");
+      return;
+    }
     try {
       setLoading(true);
-      await axios.delete(`${BASE_URL}/projects/${projectId}`);
+      await axios.delete(`${BASE_URL}/projects/${projectId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       setProjects(projects.filter((p) => p._id !== projectId));
       toast.success("Project deleted successfully");
     } catch (error) {
@@ -293,12 +302,24 @@ export default function ProjectOverview() {
       toast.error("You must be logged in to remove images");
       return;
     }
-
+    const project = projects.find((p) => p._id === projectId);
+    if (!canEditProject(project)) {
+      toast.error("You don't have permission to edit this project");
+      return;
+    }
     try {
       setLoading(true);
-      await axios.patch(`${BASE_URL}/projects/${projectId}/remove-image`, {
-        imageUrl,
-      });
+      await axios.patch(
+        `${BASE_URL}/projects/${projectId}/remove-image`,
+        {
+          imageUrl,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       setProjects(
         projects.map((p) =>
           p._id === projectId
@@ -323,6 +344,10 @@ export default function ProjectOverview() {
   };
 
   const openEditDialog = (project) => {
+    if (!canEditProject(project)) {
+      toast.error("You don't have permission to edit this project");
+      return;
+    }
     setSelectedProject(project);
     setProjectFiles([]);
     setProjectFilePreviewUrls([]);
@@ -340,6 +365,11 @@ export default function ProjectOverview() {
             </h1>
             <p className="text-gray-500 mt-1">
               Manage your projects and their assets
+              {user?.role === "admin" && (
+                <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                  Admin View - All Projects
+                </span>
+              )}
             </p>
           </div>
           <Dialog open={open} onOpenChange={setOpen}>
@@ -449,7 +479,6 @@ export default function ProjectOverview() {
                       </p>
                     </div>
                   </div>
-
                   {/* Preview of selected files */}
                   {(editMode ? projectFilePreviewUrls : filePreviewUrls)
                     .length > 0 && (
@@ -478,7 +507,6 @@ export default function ProjectOverview() {
                       ))}
                     </div>
                   )}
-
                   {/* Show existing images when editing */}
                   {editMode &&
                     selectedProject?.images &&
@@ -642,8 +670,7 @@ export default function ProjectOverview() {
                       <ImageIcon className="h-12 w-12 text-gray-400" />
                     </div>
                   )}
-
-                  {project.user?._id === user?._id && (
+                  {canEditProject(project) && (
                     <div className="absolute top-2 right-2">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -674,7 +701,6 @@ export default function ProjectOverview() {
                     </div>
                   )}
                 </CardHeader>
-
                 <CardContent className="p-5">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-semibold text-lg text-gray-900">
@@ -684,19 +710,16 @@ export default function ProjectOverview() {
                       percentage={calculateCompletion(project.images)}
                     />
                   </div>
-
                   {project.description && (
                     <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                       {project.description}
                     </p>
                   )}
-
                   {project.note && (
                     <div className="p-2 bg-amber-50 rounded-md text-sm text-amber-800 mb-3">
                       {project.note}
                     </div>
                   )}
-
                   <div className="flex flex-wrap gap-2 mt-3">
                     {project.images && project.images.length > 0 ? (
                       <div className="flex items-center">
@@ -714,13 +737,17 @@ export default function ProjectOverview() {
                     )}
                   </div>
                 </CardContent>
-
                 <CardFooter className="px-5 py-3 border-t bg-gray-50 flex justify-between">
                   <div className="text-xs text-gray-500">
                     By {project.user?.username || "Unknown user"}
+                    {user?.role === "admin" &&
+                      project.user?._id !== user._id && (
+                        <span className="ml-2 px-1 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">
+                          Other User
+                        </span>
+                      )}
                   </div>
-
-                  {project.user?._id === user?._id &&
+                  {canEditProject(project) &&
                     project.images &&
                     project.images.length > 0 && (
                       <Dialog>

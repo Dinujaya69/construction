@@ -281,7 +281,7 @@ export default function FurnitureReport() {
               <tr>
                 <th>Item</th>
                 <th>Item No</th>
-                <th>Item Quantity</th>
+                <th>Item count</th>
                 <th>Sold</th>
                 <th>Remaining</th>
               </tr>
@@ -481,7 +481,7 @@ export default function FurnitureReport() {
                   <TableRow>
                     <TableHead className="font-bold">Item</TableHead>
                     <TableHead className="font-bold">Item No</TableHead>
-                    <TableHead className="font-bold">Item Quantity</TableHead>
+                    <TableHead className="font-bold">Item Count</TableHead>
                     <TableHead className="font-bold">Sold</TableHead>
                     <TableHead className="font-bold">Remaining</TableHead>
                   </TableRow>

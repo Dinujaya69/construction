@@ -5,6 +5,7 @@ import ReP1 from "@/assets/report/Repote1.jpg";
 import ReP2 from "@/assets/report/Repote2.jpg";
 import ReP3 from "@/assets/report/Repote3.jpg";
 import MainLayout from "@/components/MainLayout/MainLayout";
+import Link from "next/link";
 
 const Page = () => {
   return (
@@ -44,37 +45,41 @@ const Page = () => {
 
             {/* Furniture Report */}
             <div className="w-[30%] bg-white rounded-xl shadow-xl overflow-hidden">
-              <div className="p-6">
-                <div className="h-56 relative mb-4">
-                  <Image
-                    src={ReP2 || "/placeholder.svg"}
-                    alt="Furniture Report"
-                    fill
-                    className="object-cover rounded-lg"
-                  />
+              <Link href="/pages/report/furniture">
+                <div className="p-6">
+                  <div className="h-56 relative mb-4">
+                    <Image
+                      src={ReP2 || "/placeholder.svg"}
+                      alt="Furniture Report"
+                      fill
+                      className="object-cover rounded-lg"
+                    />
+                  </div>
+                  <h3 className="text-center text-2xl font-semibold text-gray-800">
+                    Furniture Report
+                  </h3>
                 </div>
-                <h3 className="text-center text-2xl font-semibold text-gray-800">
-                  Furniture Report
-                </h3>
-              </div>
+              </Link>
             </div>
           </div>
 
           {/* Bottom Section */}
           <div className="w-[30%] bg-white rounded-xl shadow-xl overflow-hidden">
-            <div className="p-6">
-              <div className="h-56 relative mb-4">
-                <Image
-                  src={ReP3 || "/placeholder.svg"}
-                  alt="Financial Report"
-                  fill
-                  className="object-cover rounded-lg"
-                />
+            <Link href="/pages/report/financial">
+              <div className="p-6">
+                <div className="h-56 relative mb-4">
+                  <Image
+                    src={ReP3 || "/placeholder.svg"}
+                    alt="Financial Report"
+                    fill
+                    className="object-cover rounded-lg"
+                  />
+                </div>
+                <h3 className="text-center text-2xl font-semibold text-gray-800">
+                  Financial Report
+                </h3>
               </div>
-              <h3 className="text-center text-2xl font-semibold text-gray-800">
-                Financial Report
-              </h3>
-            </div>
+            </Link>
           </div>
         </div>
       </div>

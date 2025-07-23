@@ -6,7 +6,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     padding: 30,
     fontFamily: "Helvetica",
-  },  
+  },
   title: {
     fontSize: 24,
     textAlign: "center",
@@ -62,21 +62,10 @@ const styles = StyleSheet.create({
     color: "#374151",
     textAlign: "right",
   },
-  tableCellIndented: {
-    fontSize: 11,
-    color: "#374151",
-    paddingLeft: 15,
-  },
   revenueRow: {
     backgroundColor: "#ecfdf5",
   },
-  expensesHeaderRow: {
-    backgroundColor: "#fef7ed",
-  },
-  expenseRow: {
-    backgroundColor: "#fffbeb",
-  },
-  totalCostRow: {
+  costRow: {
     backgroundColor: "#fef2f2",
   },
   profitRow: {
@@ -152,20 +141,10 @@ export default function IncomeStatementPDF({ formData, totalCost, profit }) {
             </View>
           </View>
 
-          {/* Expenses Header Row */}
-          <View style={[styles.tableRow, styles.expensesHeaderRow]}>
-            <View style={styles.tableColHeader}>
-              <Text style={styles.tableCellHeader}>EXPENSES</Text>
-            </View>
+          {/* Cost Items */}
+          <View style={styles.tableRow}>
             <View style={styles.tableCol}>
-              <Text style={styles.tableCellRight}></Text>
-            </View>
-          </View>
-
-          {/* Individual Expense Items */}
-          <View style={[styles.tableRow, styles.expenseRow]}>
-            <View style={styles.tableCol}>
-              <Text style={styles.tableCellIndented}>
+              <Text style={styles.tableCell}>
                 Cost for the construction (BOQ)
               </Text>
             </View>
@@ -176,9 +155,9 @@ export default function IncomeStatementPDF({ formData, totalCost, profit }) {
             </View>
           </View>
 
-          <View style={[styles.tableRow, styles.expenseRow]}>
+          <View style={styles.tableRow}>
             <View style={styles.tableCol}>
-              <Text style={styles.tableCellIndented}>Cost for Furniture</Text>
+              <Text style={styles.tableCell}>Cost for Furniture</Text>
             </View>
             <View style={styles.tableCol}>
               <Text style={styles.tableCellRight}>
@@ -187,9 +166,9 @@ export default function IncomeStatementPDF({ formData, totalCost, profit }) {
             </View>
           </View>
 
-          <View style={[styles.tableRow, styles.expenseRow]}>
+          <View style={styles.tableRow}>
             <View style={styles.tableCol}>
-              <Text style={styles.tableCellIndented}>Payments for workers</Text>
+              <Text style={styles.tableCell}>Payments for workers</Text>
             </View>
             <View style={styles.tableCol}>
               <Text style={styles.tableCellRight}>
@@ -198,9 +177,9 @@ export default function IncomeStatementPDF({ formData, totalCost, profit }) {
             </View>
           </View>
 
-          <View style={[styles.tableRow, styles.expenseRow]}>
+          <View style={styles.tableRow}>
             <View style={styles.tableCol}>
-              <Text style={styles.tableCellIndented}>All other cost</Text>
+              <Text style={styles.tableCell}>All other cost</Text>
             </View>
             <View style={styles.tableCol}>
               <Text style={styles.tableCellRight}>
@@ -210,9 +189,9 @@ export default function IncomeStatementPDF({ formData, totalCost, profit }) {
           </View>
 
           {/* Total Cost Row */}
-          <View style={[styles.tableRow, styles.totalCostRow]}>
+          <View style={[styles.tableRow, styles.costRow]}>
             <View style={styles.tableColHeader}>
-              <Text style={styles.tableCellHeader}>TOTAL EXPENSES</Text>
+              <Text style={styles.tableCellHeader}>TOTAL COST</Text>
             </View>
             <View style={styles.tableCol}>
               <Text style={styles.tableCellRight}>
@@ -230,7 +209,7 @@ export default function IncomeStatementPDF({ formData, totalCost, profit }) {
           >
             <View style={styles.tableColHeader}>
               <Text style={styles.tableCellHeader}>
-                NET {profit >= 0 ? "PROFIT" : "LOSS"}
+                PROFIT {profit < 0 ? "(LOSS)" : ""}
               </Text>
             </View>
             <View style={styles.tableCol}>
@@ -253,7 +232,7 @@ export default function IncomeStatementPDF({ formData, totalCost, profit }) {
           </View>
 
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Total Expenses:</Text>
+            <Text style={styles.summaryLabel}>Total Cost:</Text>
             <Text style={styles.summaryValue}>{formatCurrency(totalCost)}</Text>
           </View>
 
