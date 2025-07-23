@@ -414,6 +414,9 @@ export default function ClientManagement() {
                         Projects
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        ProjectID
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Role
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -439,7 +442,9 @@ export default function ClientManagement() {
                                 </div>
                               </div>
                               <div className="ml-4">
-                                <div className="text-sm font-medium text-gray-900">{client.name}</div>
+                                <div className="text-sm font-medium text-gray-900">
+                                  {client.name}
+                                </div>
                                 <div className="text-sm text-gray-500 flex items-center">
                                   <Mail className="h-3 w-3 mr-1" />
                                   {client.email}
@@ -450,7 +455,9 @@ export default function ClientManagement() {
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <FolderOpen className="h-4 w-4 text-gray-400 mr-2" />
-                              <span className="text-sm text-gray-900">{clientProjects.length} projects</span>
+                              <span className="text-sm text-gray-900">
+                                {clientProjects.length} projects
+                              </span>
                             </div>
                             {clientProjects.length > 0 && (
                               <div className="text-xs text-gray-500 mt-1">
@@ -458,12 +465,31 @@ export default function ClientManagement() {
                                   .slice(0, 2)
                                   .map((project) => project.name)
                                   .join(", ")}
-                                {clientProjects.length > 2 && ` +${clientProjects.length - 2} more`}
+                                {clientProjects.length > 2 &&
+                                  ` +${clientProjects.length - 2} more`}
                               </div>
                             )}
                           </td>
+
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <Badge variant={client.role === "admin" ? "default" : "secondary"}>{client.role}</Badge>
+                            <div className="flex items-center">
+                              {projects.map((project) => (
+                                <div key={project._id} className="mr-2">
+                                  <Badge>{project.projectID}</Badge>
+                                </div>
+                              ))}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <Badge
+                              variant={
+                                client.role === "admin"
+                                  ? "default"
+                                  : "secondary"
+                              }
+                            >
+                              {client.role}
+                            </Badge>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             <div className="flex items-center">
@@ -479,7 +505,9 @@ export default function ClientManagement() {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => openEditDialog(client)}>
+                                <DropdownMenuItem
+                                  onClick={() => openEditDialog(client)}
+                                >
                                   <Edit className="mr-2 h-4 w-4" />
                                   Edit Client
                                 </DropdownMenuItem>
@@ -494,7 +522,7 @@ export default function ClientManagement() {
                             </DropdownMenu>
                           </td>
                         </tr>
-                      )
+                      );
                     })}
                   </tbody>
                 </table>
